@@ -13,82 +13,120 @@
     <style>
       body { background: #fdf5e6; padding: 0; margin: 0; width: 100%; }
       td { padding: 20px 8px; }
-      .total { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; }
-      .subtotal { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; padding: 20px 0; }
+      .total:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; }
+      .subtotal:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; padding: 20px 0; }
+      
       .add input { font-size: 2em; }
       h1 { background: #b22222; color: #fdf5e6; text-align: center; padding: 1em 0 0 0; margin: 0; }
       h2 { background: #b22222; color: #fdf5e6; text-align: right; font-size: 8px; padding: 0 2em 1em 0; margin: 0 0 1em 0; }
+      #adder {
+        display: grid;
+        grid-template-columns: [total] 30% [subtotal] 30% [subtotal_buttons] 40% [rightmost];
+        grid-template-rows: [header] 6em [i] 1fr [x] 1fr [sep] 1fr [c] 1fr[m] 1fr [ↂ] 1fr [footer] 4em [bottommost];
+        justify-content: stretch;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        }
+      .v, .xxv, .d, .mm, .ↁ { display: none; }
+
+        
+      #cashier #adder {
+        grid-template-rows: [header] 6em [i] 1fr [v] 1fr [x] 1fr [xxv] 1fr [sep] 1fr [c] 1fr [d] 1fr [m] 1fr [mm] 1fr [ↁ] 1fr [ↂ] 1fr [footer] 4em [bottommost];
+        .v, .xxv, .d, .mm, .ↁ { display: block; }
+        }
+        
+        
+        
+        header { grid-row: header; grid-column: total / rightmost; }
+        .i { grid-row: i; }
+        .v { grid-row: v; }
+        .x { grid-row: x; }
+        .xxv { grid-row: xxv; }
+        .sep { grid-row: sep; }
+        .c { grid-row: c; }
+        .d { grid-row: d; }
+        .m { grid-row: m; }
+        .mm { grid-row: mm; }
+        .ↁ { grid-row: ↁ; }
+        .ↂ { grid-row: ↂ; }
+        .f { grid-row: footer; }
+        
+        
+        .total { grid-column: total; }
+        .subtotal { grid-column: subtotal; }
+        .add { grid-column: subtotal_buttons; }
+        div { border: 1px solid blue; }
+        
     </style>
   </head>
   <body>
-    <h1>Supermarket Adder</h1>
-    <h2>With subtotals, For Cell Phone Webrowser, By Sudrien</h2>
+      
     <form id='adder'>
-      <table>
-        <tr>
-          <td id="total_o" class="total o">0</td>
-          <td id="subtotal_o" class="subtotal o">0</td>
-          <td class="add o"><input type="button" value="+00.01" /></td>
-        </tr>
-        <tr>
-          <td id="total_d" class="total d">0</td>
-          <td id="subtotal_d" class="subtotal d">0</td>
-          <td class="add d"><input type="button" value="+00.10" /></td>
-        </tr>
-        <tr>
-          <td class="total sep">.</td>
-          <td class="subtotal sep">.</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td id="total_c" class="total c">0</td>
-          <td id="subtotal_c" class="subtotal c">0</td>
-          <td class="add c"><input type="button" value="+01.00" /></td>
-        </tr>
-        <tr>
-          <td id="total_k" class="total k">0</td>
-          <td id="subtotal_k" class="subtotal k">0</td>
-          <td class="add k"><input type="button" value="+10.00" /></td>
-        </tr>
-        <tr>
-          <td id="total_x" class="total x">0</td>
-          <td id="subtotal_x" class="subtotal x">0</td>
-          <td class="add k"><input type="button" value="+100.00" /></td>
-        </tr>
-        <tr>
-          <td><input type="button" value="Clear Total" /></td>
-          <td><input type="button" value="Clear Subtotal" /></td>
-          <td><input type="button" value="Add to Total" /></td>
-        </tr>
-      </table>
+    <header>
+        <h1>Supermarket Adder</h1>
+        <h2>With subtotals, For Cell Phone Webrowser, By Sudrien</h2>
+    </header>
+      
+            <div class="total i">0</div>
+            <div class="subtotal i">0</div>
+            <div class="add oi"><input type="button" value="+00.01" /></div>
+
+            <div class="add v"><input type="button" value="+00.05" /></div>
+ 
+            <div class="total x">0</div>
+            <div class="subtotal x">0</div>
+            <div class="add x"><input type="button" value="+00.10" /></div>
+  
+            <div class="add xxv"><input type="button" value="+00.25" /></div>
+  
+  
+  
+            <div class="total sep">.</div>
+            <div class="subtotal sep">.</div>
+  
+            <div class="total c">0</div>
+            <div class="subtotal c">0</div>
+            <div class="add c"><input type="button" value="+01.00" /></div>
+            
+            <div class="add d"><input type="button" value="+05.00" /></div>
+  
+            <div class="total m">0</div>
+            <div class="subtotal m">0</div>
+            <div class="add m"><input type="button" value="+10.00" /></div>
+            
+            <div class="add mm"><input type="button" value="+20.00" /></div>
+            <div class="add ↁ"><input type="button" value="+50.00" /></div>
+            
+            <div class="total ↂ">0</div>
+            <div class="subtotal ↂ">0</div>
+            <div class="add ↂ"><input type="button" value="+100.00" /></div>
+          
+        
+          <div class="total f"><input type="button" value="Clear Total" /></div>
+          <div class="subtotal f"><input type="button" value="Clear Subtotal" /></div>
+          <div class="add f"><input type="button" value="Add to Total" /></div>
+        
     </form>
+    <dialog id="options">
+          <label><input type="checkbox" name="cashier">Cashier Mode</label>
+          <label><input type="number" name="tax"> % Tax</label>
+     
+    </dialog>
     <script>
       document.getElementById('adder').addEventListener("click", subtotal_handler);
       // these are always in cents
       let subtotal = 0;
       let total = 0;
       function subtotal_handler(event) {
+        if(/\+/.test(event.target.value)) {
+          subtotal += Number(event.target.value) * 100;
+          draw_subtotal();
+          return;
+          }
         switch(event.target.value) {
-        case "+00.01":
-          subtotal += 1;
-          draw_subtotal();
-          break;
-        case "+00.10":
-          subtotal += 10;
-          draw_subtotal();
-          break;
-        case "+01.00":
-          subtotal += 100;
-          draw_subtotal();
-          break;
-        case "+10.00":
-          subtotal += 1000;
-          draw_subtotal();
-          break;
-        case "+100.00":
-          subtotal += 10000;
-          draw_subtotal();
-          break;
         case "Clear Total":
           total = 0;
           draw_total();
@@ -108,18 +146,18 @@
       }
 
     function draw_total(){
-      document.getElementById('total_o').innerHTML = Math.floor( (total % 10) / 1 );
-      document.getElementById('total_d').innerHTML = Math.floor( (total % 100) / 10 );
-      document.getElementById('total_c').innerHTML = Math.floor( (total % 1000) / 100 );
-      document.getElementById('total_k').innerHTML = Math.floor( (total % 10000) / 1000 );
-      document.getElementById('total_x').innerHTML = Math.floor( (total % 100000) / 10000 );
+      document.querySelector('.total.i').innerHTML = Math.floor( (total % 10) / 1 );
+      document.querySelector('.total.x').innerHTML = Math.floor( (total % 100) / 10 );
+      document.querySelector('.total.c').innerHTML = Math.floor( (total % 1000) / 100 );
+      document.querySelector('.total.m').innerHTML = Math.floor( (total % 10000) / 1000 );
+      document.querySelector('.total.ↂ').innerHTML = Math.floor( (total % 100000) / 10000 );
       }
     function draw_subtotal(){
-      document.getElementById('subtotal_o').innerHTML = Math.floor( (subtotal % 10) / 1 );
-      document.getElementById('subtotal_d').innerHTML = Math.floor( (subtotal % 100) / 10 );
-      document.getElementById('subtotal_c').innerHTML = Math.floor( (subtotal % 1000) / 100 );
-      document.getElementById('subtotal_k').innerHTML = Math.floor( (subtotal % 10000) / 1000 );
-      document.getElementById('subtotal_x').innerHTML = Math.floor( (subtotal % 100000) / 10000 );
+      document.querySelector('.subtotal.i').innerHTML = Math.floor( (subtotal % 10) / 1 );
+      document.querySelector('.subtotal.x').innerHTML = Math.floor( (subtotal % 100) / 10 );
+      document.querySelector('.subtotal.c').innerHTML = Math.floor( (subtotal % 1000) / 100 );
+      document.querySelector('.subtotal.m').innerHTML = Math.floor( (subtotal % 10000) / 1000 );
+      document.querySelector('.subtotal.ↂ').innerHTML = Math.floor( (subtotal % 100000) / 10000 );
       }
     </script>
   </body>
