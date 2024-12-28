@@ -1,0 +1,126 @@
+<!doctype html>
+  <html>
+  <head>
+    <title>Supermarket Adder, With subtotals</title>
+    <!-- original by Sudrien, MIT license -->
+    <meta name="viewport" content="width=380, initial-scale=1, maximum-scale=1.0, user-scalable=0">
+    <meta name="description" content="For Cell Phone Webrowser, By Sudrien">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://adder.sudrien.net/">
+    <meta property="og:description" content="For Cell Phone Webrowser, By Sudrien">
+    <meta property="og:image" content="https://adder.sudrien.net/preview.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png"> 
+    <style>
+      body { background: #fdf5e6; padding: 0; margin: 0; width: 100%; }
+      td { padding: 20px 8px; }
+      .total { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; }
+      .subtotal { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; padding: 20px 0; }
+      .add input { font-size: 2em; }
+      h1 { background: #b22222; color: #fdf5e6; text-align: center; padding: 1em 0 0 0; margin: 0; }
+      h2 { background: #b22222; color: #fdf5e6; text-align: right; font-size: 8px; padding: 0 2em 1em 0; margin: 0 0 1em 0; }
+    </style>
+  </head>
+  <body>
+    <h1>Supermarket Adder</h1>
+    <h2>With subtotals, For Cell Phone Webrowser, By Sudrien</h2>
+    <form id='adder'>
+      <table>
+        <tr>
+          <td id="total_o" class="total o">0</td>
+          <td id="subtotal_o" class="subtotal o">0</td>
+          <td class="add o"><input type="button" value="+00.01" /></td>
+        </tr>
+        <tr>
+          <td id="total_d" class="total d">0</td>
+          <td id="subtotal_d" class="subtotal d">0</td>
+          <td class="add d"><input type="button" value="+00.10" /></td>
+        </tr>
+        <tr>
+          <td class="total sep">.</td>
+          <td class="subtotal sep">.</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td id="total_c" class="total c">0</td>
+          <td id="subtotal_c" class="subtotal c">0</td>
+          <td class="add c"><input type="button" value="+01.00" /></td>
+        </tr>
+        <tr>
+          <td id="total_k" class="total k">0</td>
+          <td id="subtotal_k" class="subtotal k">0</td>
+          <td class="add k"><input type="button" value="+10.00" /></td>
+        </tr>
+        <tr>
+          <td id="total_x" class="total x">0</td>
+          <td id="subtotal_x" class="subtotal x">0</td>
+          <td class="add k"><input type="button" value="+100.00" /></td>
+        </tr>
+        <tr>
+          <td><input type="button" value="Clear Total" /></td>
+          <td><input type="button" value="Clear Subtotal" /></td>
+          <td><input type="button" value="Add to Total" /></td>
+        </tr>
+      </table>
+    </form>
+    <script>
+      document.getElementById('adder').addEventListener("click", subtotal_handler);
+      // these are always in cents
+      let subtotal = 0;
+      let total = 0;
+      function subtotal_handler(event) {
+        switch(event.target.value) {
+        case "+00.01":
+          subtotal += 1;
+          draw_subtotal();
+          break;
+        case "+00.10":
+          subtotal += 10;
+          draw_subtotal();
+          break;
+        case "+01.00":
+          subtotal += 100;
+          draw_subtotal();
+          break;
+        case "+10.00":
+          subtotal += 1000;
+          draw_subtotal();
+          break;
+        case "+100.00":
+          subtotal += 10000;
+          draw_subtotal();
+          break;
+        case "Clear Total":
+          total = 0;
+          draw_total();
+          break;
+        case "Add to Total":
+          total += subtotal;
+          subtotal = 0;
+          draw_total();
+          draw_subtotal();
+          break;
+        case "Clear Subtotal":
+          subtotal = 0;
+          draw_subtotal();
+          break;
+        }
+      return;      
+      }
+
+    function draw_total(){
+      document.getElementById('total_o').innerHTML = Math.floor( (total % 10) / 1 );
+      document.getElementById('total_d').innerHTML = Math.floor( (total % 100) / 10 );
+      document.getElementById('total_c').innerHTML = Math.floor( (total % 1000) / 100 );
+      document.getElementById('total_k').innerHTML = Math.floor( (total % 10000) / 1000 );
+      document.getElementById('total_x').innerHTML = Math.floor( (total % 100000) / 10000 );
+      }
+    function draw_subtotal(){
+      document.getElementById('subtotal_o').innerHTML = Math.floor( (subtotal % 10) / 1 );
+      document.getElementById('subtotal_d').innerHTML = Math.floor( (subtotal % 100) / 10 );
+      document.getElementById('subtotal_c').innerHTML = Math.floor( (subtotal % 1000) / 100 );
+      document.getElementById('subtotal_k').innerHTML = Math.floor( (subtotal % 10000) / 1000 );
+      document.getElementById('subtotal_x').innerHTML = Math.floor( (subtotal % 100000) / 10000 );
+      }
+    </script>
+  </body>
+</html>
