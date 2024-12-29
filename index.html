@@ -1,6 +1,7 @@
 <!doctype html>
   <html>
   <head>
+    <meta charset="UTF-8">
     <title>Supermarket Adder, With subtotals</title>
     <!-- original by Sudrien, MIT license -->
     <meta name="viewport" content="width=380, initial-scale=1, maximum-scale=1.0, user-scalable=0">
@@ -16,7 +17,7 @@
       .total:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; }
       .subtotal:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; padding: 20px 0; }
       
-      .add input { font-size: 2em; }
+      .add input { font-size: 2em; width: 100%; border-radius: 1em; background: #444; color: #fff; border: 0; }
       h1 { background: #b22222; color: #fdf5e6; text-align: center; padding: 1em 0 0 0; margin: 0; }
       h2 { background: #b22222; color: #fdf5e6; text-align: right; font-size: 8px; padding: 0 2em 1em 0; margin: 0 0 1em 0; }
       #adder {
@@ -26,21 +27,21 @@
         justify-content: stretch;
         position: fixed;
         top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
         }
       .v, .xxv, .d, .mm, .ↁ { display: none; }
 
         
-      #cashier #adder {
+      body.cashier #adder {
         grid-template-rows: [header] 6em [i] 1fr [v] 1fr [x] 1fr [xxv] 1fr [sep] 1fr [c] 1fr [d] 1fr [m] 1fr [mm] 1fr [ↁ] 1fr [ↂ] 1fr [footer] 4em [bottommost];
         .v, .xxv, .d, .mm, .ↁ { display: block; }
         }
         
         
         
-        header { grid-row: header; grid-column: total / rightmost; }
+        header { grid-row: header; grid-column: total / rightmost; margin: 0 -10px; }
         .i { grid-row: i; }
         .v { grid-row: v; }
         .x { grid-row: x; }
@@ -57,13 +58,27 @@
         
         .total { grid-column: total; }
         .subtotal { grid-column: subtotal; }
-        .add { grid-column: subtotal_buttons; }
-        div { border: 1px solid blue; }
+        .add { grid-column: subtotal_buttons; justify-self: stretch; }
+        /* div { border: 1px solid blue; } */
+        div { place-self: center; }
         
+        #options_link { position: fixed; top: 10px; right: 10px; z-index: 50; font-size: 2.8em; text-decoration: none; color: #fff; }
+        #options { display: block; position: fixed; right: 0; top: 0; z-index: 100; height: 100vh; background: #fff; border-left: 3px double #000; }
+        #options:not(:target):not([open]) { display: none; }
+        #options_close { position: fixed; top: 10px; right: 10px; font-size: 2.8em; text-decoration: none; color: #f00; }
+        menu { margin-top: 5em; }
+        menu li { list-style-type: none; margin: 0; padding: 0 2em 1em 0; }
     </style>
   </head>
   <body>
-      
+    <a href="#options" id="options_link">≡</a>
+    <form id="options">
+      <menu>
+          <li><a href="#" id="options_close">✖</a></li>
+          <li><label><input type="checkbox" id="cashier">Cashier Mode</label></li>
+          <li><label><input type="number" id="tax" value="0.0"> % Tax On Total</label></li>
+      </menu>
+    </form>
     <form id='adder'>
     <header>
         <h1>Supermarket Adder</h1>
@@ -110,35 +125,46 @@
           <div class="add f"><input type="button" value="Add to Total" /></div>
         
     </form>
-    <dialog id="options">
-          <label><input type="checkbox" name="cashier">Cashier Mode</label>
-          <label><input type="number" name="tax"> % Tax</label>
-     
-    </dialog>
+
     <script>
       document.getElementById('adder').addEventListener("click", subtotal_handler);
+      document.getElementById('cashier').addEventListener("click", cashier_handler);
+      document.getElementById('tax').addEventListener("change", tax_handler);
       // these are always in cents
-      let subtotal = 0;
-      let total = 0;
+      let tax = 1.0;
+      let subtotal = [];
+      let total = [];
+      function cashier_handler(event) {
+        if(document.getElementById('cashier').checked) {
+          document.body.classList.add('cashier');
+          }
+        else {
+          document.body.classList.remove('cashier');
+          }
+        }
+      function tax_handler(event) {
+        tax = 1.0 + Number(document.getElementById('tax').value) / 100;
+        draw_total();
+        }
       function subtotal_handler(event) {
         if(/\+/.test(event.target.value)) {
-          subtotal += Number(event.target.value) * 100;
+          subtotal.push( Number(event.target.value) * 100 );
           draw_subtotal();
           return;
           }
         switch(event.target.value) {
         case "Clear Total":
-          total = 0;
+          total = [];
           draw_total();
           break;
         case "Add to Total":
-          total += subtotal;
-          subtotal = 0;
+          total.push( subtotal );
+          subtotal = [];
           draw_total();
           draw_subtotal();
           break;
         case "Clear Subtotal":
-          subtotal = 0;
+          subtotal = [];
           draw_subtotal();
           break;
         }
@@ -146,18 +172,21 @@
       }
 
     function draw_total(){
-      document.querySelector('.total.i').innerHTML = Math.floor( (total % 10) / 1 );
-      document.querySelector('.total.x').innerHTML = Math.floor( (total % 100) / 10 );
-      document.querySelector('.total.c').innerHTML = Math.floor( (total % 1000) / 100 );
-      document.querySelector('.total.m').innerHTML = Math.floor( (total % 10000) / 1000 );
-      document.querySelector('.total.ↂ').innerHTML = Math.floor( (total % 100000) / 10000 );
+      let t = total.reduce((total, subArray) => { return total + subArray.reduce((subTotal, num) => subTotal + num, 0); }, 0);
+      t = Math.ceil(t * tax);
+      document.querySelector('.total.i').innerHTML = Math.floor( (t % 10) / 1 );
+      document.querySelector('.total.x').innerHTML = Math.floor( (t % 100) / 10 );
+      document.querySelector('.total.c').innerHTML = Math.floor( (t % 1000) / 100 );
+      document.querySelector('.total.m').innerHTML = Math.floor( (t % 10000) / 1000 );
+      document.querySelector('.total.ↂ').innerHTML = Math.floor( (t % 100000) / 10000 );
       }
     function draw_subtotal(){
-      document.querySelector('.subtotal.i').innerHTML = Math.floor( (subtotal % 10) / 1 );
-      document.querySelector('.subtotal.x').innerHTML = Math.floor( (subtotal % 100) / 10 );
-      document.querySelector('.subtotal.c').innerHTML = Math.floor( (subtotal % 1000) / 100 );
-      document.querySelector('.subtotal.m').innerHTML = Math.floor( (subtotal % 10000) / 1000 );
-      document.querySelector('.subtotal.ↂ').innerHTML = Math.floor( (subtotal % 100000) / 10000 );
+      let s = subtotal.reduce((a, b) => a + b, 0);
+      document.querySelector('.subtotal.i').innerHTML = Math.floor( (s % 10) / 1 );
+      document.querySelector('.subtotal.x').innerHTML = Math.floor( (s % 100) / 10 );
+      document.querySelector('.subtotal.c').innerHTML = Math.floor( (s % 1000) / 100 );
+      document.querySelector('.subtotal.m').innerHTML = Math.floor( (s % 10000) / 1000 );
+      document.querySelector('.subtotal.ↂ').innerHTML = Math.floor( (s % 100000) / 10000 );
       }
     </script>
   </body>
