@@ -1,0 +1,20 @@
+{
+  "name": "Supermarket Adder",
+  "short_name": "Adder",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf5e6",
+  "theme_color": "#b22222",
+  "icons": [
+    {
+      "src": "icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
