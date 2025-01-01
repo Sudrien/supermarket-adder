@@ -7,9 +7,9 @@ Currently running on https://adder.sudrien.net/
 - Percentage tax on total
 - Cashier mode (more denomination buttons)
 - Full screen PWA with offline support
+- uses localstorage, current state survives reloads
 
 TODO
-- use localstorage
 - last click undo
 - tax visible when active
 - itemized total list
