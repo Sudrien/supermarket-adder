@@ -8,10 +8,10 @@ Currently running on https://adder.sudrien.net/
 - Cashier mode (more denomination buttons)
 - Full screen PWA with offline support
 - uses localstorage, current state survives reloads
+- tax visible when active
 
 TODO
 - last click undo
-- tax visible when active
 - itemized total list
 - force fit on screen
 - nice ui toggle for cashier and tax

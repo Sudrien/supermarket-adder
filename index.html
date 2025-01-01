@@ -23,16 +23,17 @@
     <style>
       body { background: #fdf5e6; padding: 0; margin: 0; width: 100%; }
       td { padding: 20px 8px; }
-      .total:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; }
-      .subtotal:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 2.8em; font-weight: bold; padding: 20px 0; }
+      .total:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 3.4em; font-weight: bold; }
+      .subtotal:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 3.4em; font-weight: bold; padding: 1px; }
       
-      .add input { font-size: 2em; width: 100%; border-radius: 1em; background: #444; color: #fff; border: 0; }
+      .add input { font-size: 2em; width: 100%; border-radius: 1em; background: #444; color: #fff; border: 0; margin: 1px; }
+      .total input, .subtotal input { font-size: 1.4em; line-height: 2em; width: 100%; border-radius: 1em; background: #f00; color: #fff; border: 0; padding: 0 10px; }
       h1 { background: #b22222; color: #fdf5e6; text-align: center; padding: 10px 0 0 0; margin: 0; font-size: 2em; }
-      h2 { background: #b22222; color: #fdf5e6; text-align: center; font-size: 8px; padding: 0 0 1em 0em; margin: -1em 0 1em 0; }
+      h2 { background: #b22222; color: #fdf5e6; text-align: center; font-size: 8px; padding: 0 0 1em 0em; margin: -1em 0 0em 0; }
       #adder {
         display: grid;
-        grid-template-columns: [total] 30% [subtotal] 30% [subtotal_buttons] 40% [rightmost];
-        grid-template-rows: [header] 6em [i] 1fr [x] 1fr [sep] 1fr [c] 1fr[m] 1fr [ↂ] 1fr [footer] 4em [bottommost];
+        grid-template-columns: [total0] 1fr [total] 1fr [total1] 1fr [subtotal0] 1fr [subtotal] 1fr [subtotal1] 1fr [subtotal_buttons] 40% [rightmost];
+        grid-template-rows: [header] 6em [i] 1fr [x] 1fr [sep] 1em [c] 1fr[m] 1fr [ↂ] 1fr [footer] 4em [bottommost];
         justify-content: stretch;
         position: fixed;
         top: 0;
@@ -44,13 +45,13 @@
 
         
       body.cashier #adder {
-        grid-template-rows: [header] 6em [i] 1fr [v] 1fr [x] 1fr [xxv] 1fr [sep] 1fr [c] 1fr [d] 1fr [m] 1fr [mm] 1fr [ↁ] 1fr [ↂ] 1fr [footer] 4em [bottommost];
+        grid-template-rows: [header] 6em [i] 1fr [v] 1fr [x] 1fr [xxv] 1fr [sep] 1em [c] 1fr [d] 1fr [m] 1fr [mm] 1fr [ↁ] 1fr [ↂ] 1fr [footer] 4em [bottommost];
         .v, .xxv, .d, .mm, .ↁ { display: block; }
         }
         
         
         
-        header { grid-row: header; grid-column: total / rightmost; margin: 0 -10px; }
+        header { grid-row: header; grid-column: 1 / -1; margin: 0 -10px; }
         .i { grid-row: i; }
         .v { grid-row: v; }
         .x { grid-row: x; }
@@ -66,13 +67,19 @@
         
         
         .total { grid-column: total; }
+        .total.f { grid-column: total0 / subtotal0; }
         .subtotal { grid-column: subtotal; }
+        .subtotal.f { grid-column: subtotal0 / subtotal_buttons; }
         .add { grid-column: subtotal_buttons; justify-self: stretch; }
-        /* div { border: 1px solid blue; } */
+
+        #tax_display { display: none; grid-column: total1; grid-row:  i / ↂ; justify-self: stretch; align-self: stretch; text-align: center; writing-mode:vertical-lr; transform: rotate(180deg); color: #222; }
+        body.taxed #tax_display { display: block; }
+
+
         div { place-self: center; }
         
         #options_link { position: fixed; top: 10px; right: 10px; z-index: 50; font-size: 2em; text-decoration: none; color: #fff; font-weight: bold; }
-        #options { display: block; position: fixed; right: 0; top: 0; z-index: 100; height: 100vh; background: #fff; border-left: 3px double #000; }
+        #options { display: block; position: fixed; right: 0; top: 0; z-index: 100; height: 100vh; background: #fff; border-left: 3px double #000; max-width: 90vw; }
         #options:not(:target):not([open]) { display: none; }
         #options_close { position: fixed; top: 10px; right: 10px; font-size: 2em; text-decoration: none; color: #f00; }
         menu { margin-top: 5em; }
@@ -130,10 +137,11 @@
             <div class="subtotal ↂ">0</div>
             <div class="add ↂ"><input type="button" value="+100.00" /></div>
           
+          <div id="tax_display">includes 7% Tax</div>
         
           <div class="total f"><input type="button" value="Clear Total" /></div>
           <div class="subtotal f"><input type="button" value="Clear Subtotal" /></div>
-          <div class="add f"><input type="button" value="Add to Total" /></div>
+          <div class="add f"><input type="button" value="+ Total" /></div>
         
     </form>
 
@@ -174,7 +182,7 @@
           localStorage.setItem("total", JSON.stringify([]));
           draw_total();
           break;
-        case "Add to Total":
+        case "+ Total":
           localStorage.setItem("total", JSON.stringify(JSON.parse(localStorage.getItem("total")).concat([JSON.parse(localStorage.getItem("subtotal"))])));
           localStorage.setItem("subtotal", JSON.stringify([]));
           draw_total();
@@ -192,13 +200,23 @@
       let t =
         JSON.parse(localStorage.getItem("total")).reduce((total, subArray) => { return total + subArray.reduce((subTotal, num) => subTotal + num, 0); }, 0);
       if(document.getElementById('tax_toggle').checked) {
-        console.warn(
-          t, 
-          JSON.parse(localStorage.getItem("tax")) / 100 + 1.0,
-          t * ((JSON.parse(localStorage.getItem("tax")) / 100) + 1.0)
-          );
         t = Math.ceil(t * (JSON.parse(localStorage.getItem("tax")) / 100 + 1.0));
+        document.getElementById('tax_display').innerHTML = 'Includes ' + String(Number(localStorage.getItem("tax"))) + '% Tax'    
+        document.body.classList.add('taxed');
         }
+      else {
+        document.body.classList.remove('taxed');
+        }
+
+
+
+
+
+
+
+
+
+
       document.querySelector('.total.i').innerHTML = Math.floor( (t % 10) / 1 );
       document.querySelector('.total.x').innerHTML = Math.floor( (t % 100) / 10 );
       document.querySelector('.total.c').innerHTML = Math.floor( (t % 1000) / 100 );
