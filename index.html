@@ -139,8 +139,8 @@
           
           <div id="tax_display">includes 7% Tax</div>
         
-          <div class="total f"><input type="button" value="Clear Total" /></div>
-          <div class="subtotal f"><input type="button" value="Clear Subtotal" /></div>
+          <div class="total f"><input type="button" value="Total ⌫" /></div>
+          <div class="subtotal f"><input type="button" value="Subtotal ⌫" /></div>
           <div class="add f"><input type="button" value="+ Total" /></div>
         
     </form>
@@ -178,7 +178,7 @@
           return;
           }
         switch(event.target.value) {
-        case "Clear Total":
+        case "Total ⌫":
           localStorage.setItem("total", JSON.stringify([]));
           draw_total();
           break;
@@ -188,7 +188,7 @@
           draw_total();
           draw_subtotal();
           break;
-        case "Clear Subtotal":
+        case "Subtotal ⌫":
           localStorage.setItem("subtotal", JSON.stringify([]));
           draw_subtotal();
           break;
