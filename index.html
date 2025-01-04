@@ -27,7 +27,7 @@
       .subtotal:not(.f) { writing-mode:vertical-lr; transform: rotate(180deg); font-size: 3.4em; font-weight: bold; padding: 1px; }
       
       .add input { font-size: 2em; width: 100%; border-radius: 1em; background: #444; color: #fff; border: 0; margin: 1px; }
-      .total input, .subtotal input { font-size: 1.4em; line-height: 2em; width: 100%; border-radius: 1em; background: #f00; color: #fff; border: 0; padding: 0 10px; }
+      .total input, .subtotal input { font-size: 1.4em; line-height: 2em; width: 100%; border-radius: 1em; background: #b22222; color: #fff; border: 0; padding: 0 10px; }
       h1 { background: #b22222; color: #fdf5e6; text-align: center; padding: 10px 0 0 0; margin: 0; font-size: 2em; }
       h2 { background: #b22222; color: #fdf5e6; text-align: center; font-size: 8px; padding: 0 0 1em 0em; margin: -1em 0 0em 0; }
       #adder {
@@ -140,7 +140,7 @@
           <div id="tax_display">includes 7% Tax</div>
         
           <div class="total f"><input type="button" value="Clear Total" /></div>
-          <div class="subtotal f"><input type="button" value="Clear Subtotal" /></div>
+          <div class="subtotal f"><input type="button" value="Clear  Subtotal" /></div>
           <div class="add f"><input type="button" value="+ Total" /></div>
         
     </form>
@@ -168,7 +168,7 @@
         }
 
       function subtotal_handler(event) {
-        if(/\+/.test(event.target.value)) {
+        if(/\+\d/.test(event.target.value)) {
           localStorage.setItem("subtotal",
             JSON.stringify(
               JSON.parse(localStorage.getItem("subtotal")).concat([ Number(event.target.value) * 100])
